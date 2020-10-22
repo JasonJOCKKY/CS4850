@@ -2,7 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define SERVER_PORT 9999
+#define SERVER_PORT 13347
 #define MAX_QUEUE 5
 #define MAX_LINE 256
 
@@ -32,16 +32,25 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    // Accept connection from a client
-    int client_socket = accept(sockfd, NULL, NULL);
-    if (client_socket == -1) {
-        printf("Fail to accept connection from client!\n");
-        return -1;
-    }
+    // Keep the server running
+    while (1) {
+        // Accept connection from a client
+        int client_socket = accept(sockfd, NULL, NULL);
+        if (client_socket == -1) {
+            printf("Fail to accept connection from client!\n");
+            return -1;
+        }
 
-    // Send data
-    char message[MAX_LINE] = "Hello from Server!";
-    send(client_socket, message, sizeof(message), 0);
+        // Send data
+        char message[MAX_LINE] = "Hello from Server!";
+        send(client_socket, message, sizeof(message), 0);
+
+        char buf[MAX_LINE];
+        while (1) {
+            recv(client_socket, buf, sizeof(buf), 0);
+            printf("Client says: %s\n", buf);
+        }
+    }
     
     return 0;
 }
