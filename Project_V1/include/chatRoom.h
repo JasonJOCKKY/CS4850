@@ -5,3 +5,11 @@
 #define SERVER_PORT 13347
 #define MAX_LINE 256
 #define MAX_QUEUE 5
+
+// List of all commands
+char commandList[][MAX_LINE] = {
+    "login [userID] [password]",
+    "newuser [userID] [password]",
+    "send [message]",
+    "logout"
+};

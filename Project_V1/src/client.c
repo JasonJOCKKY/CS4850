@@ -6,14 +6,6 @@
 #include "../include/client.h"
 #include "../include/chatRoom.h"
 
-// List of all commands
-char commandList[][MAX_LINE] = {
-    "login [userID] [password]",
-    "newuser [userID] [password]",
-    "send [message]",
-    "logout"
-};
-
 // Main
 int main() {
 
@@ -32,7 +24,7 @@ int main() {
         printf("Fail to receive the initial response!\n");
         return -1;
     }
-    printf("%s\n", buf);
+    printf("Server > %s\n", buf);
 
     // Chatroom Handeler
     while (1) {
@@ -89,7 +81,11 @@ int main() {
 
         } else if (strcmp(command, "logout") == 0) { /* Log out. */
             printf("Logging out...\n");
-            break;
+            if (logout_request(client_socket) == -1) {
+                printf("Error logging out!\n");
+                return -1;
+            }
+            return 0;
 
         } else { /* Invalid command. */
             printf(">> Please enter a valid command:\n");
@@ -101,15 +97,15 @@ int main() {
 
         // Receive response
         ssize_t receive_result = recv(client_socket, buf, sizeof(buf), 0);
-        printf("receive_result = %ld\n", receive_result);
+        // printf("receive_result = %ld\n", receive_result);
         if (receive_result == 0) { /* Lost connection to server */
-            printf(">> Lost connection to server. Closing...\n");
+            printf(">> Lost connection to server. Chutting down...\n");
             return -1;
         } else if (receive_result == -1) { /* Error receiving message. */
             printf(">> Fail to receive message from the server. Closing connection...\n");
             return -1;
         }
-        printf("Server > %s\n", buf);
+        printf("<Server> %s\n", buf);
     }
 
     
@@ -121,8 +117,6 @@ int login_request(int socket, char *userID, char *password) {
     strcat(buf, userID);
     strcat(buf, " ");
     strcat(buf, password);
-
-    printf("Login string is %s.\n", buf);
 
     return send(socket, buf, sizeof(buf), 0);
 }
