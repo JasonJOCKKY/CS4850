@@ -10,5 +10,8 @@ set(CMAKE_C_FLAGS "-std=c11")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 # Executables
-add_executable(client src/client.c include/client.h)
-add_executable(server src/server.c include/server.h)
+# add_executable(client src/client_main.c lib/client.c include/client.h)
+# add_executable(server src/server_main.c lib/server.c include/server.h)
+
+# Tests
+add_executable(server_test test/server_test.c include/server.h lib/server.c)

@@ -1,4 +1,7 @@
-// Functions for client
+/* Functions for client
+Jingsong Tan
+Nov. 2020
+*/
 
 // Request the server to log the user in.
 // \return -1 on error.
