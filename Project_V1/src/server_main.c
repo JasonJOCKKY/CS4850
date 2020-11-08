@@ -1,8 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 
 #include "../include/server.h"
-#include "../include/chatRoom.h"
 
 // Main
 int main()
@@ -37,10 +37,11 @@ int main()
             return -1;
         }
         currentUser->isLogedIn = false; /* The user is not loged in at first. */
+        printf("<<<<< new current user >>>>>>\n");
 
         // Send initial message
-        char *initialMessage = "You have successfully jointed in the server!";
-        if (send(client_socket, initialMessage, sizeof(initialMessage), 0) == -1)
+        char *initialMessage = "You have successfully reached the char room server!";
+        if (send(client_socket, initialMessage, MAX_LINE, 0) == -1)
         {
             printf("Fail to send the initial message!\n");
             return -1;

@@ -4,6 +4,7 @@ Nov. 2020
 */
 
 #include <stdbool.h>
+#include "chatRoom.h"
 
 // Data structure for user on the server.
 typedef struct userStruct
@@ -30,7 +31,7 @@ int logout_handler(int socket, User *currentUser);
 
 // Handle a invalid command. Send error message to the client.
 // \return -1 for error.
-int invalid_handler(int cocket, char *command, User *currentUser);
+int invalid_handler(int socket, char *command, User *currentUser);
 
 /* Helper Functions */
 

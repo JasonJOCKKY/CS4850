@@ -5,7 +5,6 @@
 #include <netinet/in.h>
 
 #include "../include/server.h"
-#include "../include/chatRoom.h"
 
 int login_handler(int socket, char *userID, char *password, User *currentUser)
 {
@@ -91,16 +90,85 @@ int newuser_handler(int socket, char *newUserID, char *newPassword, User *curren
 
 int send_handler(int socket, char *message, User *currentUser)
 {
+    // Validate Parameters
+    if (socket < 0 || !message || !currentUser)
+    {
+        return -1;
+    }
+
+    char buf[MAX_LINE]; /* Buffer for the reponse message. */
+
+    // Construct response message
+    if (!currentUser->isLogedIn)
+    { /* User have not logged in. */
+        snprintf(buf, MAX_LINE, "Error: You have not logged in.");
+    }
+    else
+    { /* User have logged in. */
+        snprintf(buf, MAX_LINE, "%s sends: %s", currentUser->userID, message);
+    }
+
+    // Send the response message to the client
+    if (send(socket, buf, MAX_LINE, 0) == -1)
+    { /* Fail to send response */
+        return -1;
+    }
+
+    // Successfully handeled the send request.
     return 0;
 }
 
 int logout_handler(int socket, User *currentUser)
 {
+    // Validate Parameters
+    if (socket < 0 || !currentUser)
+    {
+        return -1;
+    }
+
+    char buf[MAX_LINE]; /* Buffer for the reponse message. */
+
+    // Construct response message
+    if (!currentUser->isLogedIn)
+    { /* User have not logged in. */
+        snprintf(buf, MAX_LINE, "Error: You have not logged in.");
+    }
+    else
+    { /* User have logged in. */
+        snprintf(buf, MAX_LINE, "You have been logged out, %s.", currentUser->userID);
+        currentUser->isLogedIn = false;
+    }
+
+    // Send the response message to the client
+    if (send(socket, buf, MAX_LINE, 0) == -1)
+    { /* Fail to send response */
+        return -1;
+    }
+
+    // Successfully handeled the logout request.
     return 0;
 }
 
-int invalid_handler(int cocket, char *command, User *currentUser)
+int invalid_handler(int socket, char *command, User *currentUser)
 {
+    // Validate Parameters
+    if (socket < 0 || !command || !currentUser)
+    {
+        return -1;
+    }
+
+    char buf[MAX_LINE]; /* Buffer for the reponse message. */
+
+    // Construct response message
+    snprintf(buf, MAX_LINE, "Error! Your command is invalid: %s.", command);
+
+    // Send the response message to the client
+    if (send(socket, buf, MAX_LINE, 0) == -1)
+    { /* Fail to send response */
+        return -1;
+    }
+
+    // Successfully handeled the invalid request.
     return 0;
 }
 
@@ -157,7 +225,7 @@ int write_newuser(char *userID, char *password)
 
     // Check if user already exists
     char idBuf[MAX_ID_LENGTH];
-    while (fscanf(fp, "(%[^,], %*s\n", &idBuf) == 1)
+    while (fscanf(fp, "(%[^,], %*s\n", idBuf) == 1)
     {
         if (strcmp(idBuf, userID) == 0)
         { /* User already exists. */
@@ -196,7 +264,7 @@ int credential_doesMatch(char *userID, char *password)
     char passwordBuf[MAX_PASSWORD_LENGTH];
 
     // Read from the file
-    while (fscanf(fp, "(%[^,], %[^)])\n", &idBuf, &passwordBuf) == 2)
+    while (fscanf(fp, "(%[^,], %[^)])\n", idBuf, passwordBuf) == 2)
     {
         if (strcmp(idBuf, userID) == 0 && strcmp(passwordBuf, password) == 0)
         { /* Found a matching pair. */
@@ -240,13 +308,13 @@ int client_handler(int client_socket, User *currentUser)
         printf("> Message received: %s\n", buf);
 
         // Parse client command
-        char *command = strtok(buf, " ");
+        char *command = strtok(buf, " \n");
 
         // Send response
         if (strcmp(command, "login") == 0)
         { /* Log in.  login [userID] [password] */
-            char *userID = strtok(NULL, " ");
-            char *password = strtok(NULL, " ");
+            char *userID = strtok(NULL, " \n");
+            char *password = strtok(NULL, " \n");
 
             if (login_handler(client_socket, userID, password, currentUser) == -1)
             { /* Error when handling login request. */
@@ -254,11 +322,12 @@ int client_handler(int client_socket, User *currentUser)
                 return -1;
             }
             printf("> Successfully handled a login request.\n");
+            printf("After Login: current user is = '%s'\n", currentUser->userID);
         }
         else if (strcmp(command, "newuser") == 0)
         { /* Create new user. newuser [userID] [password] */
-            char *userID = strtok(NULL, " ");
-            char *password = strtok(NULL, " ");
+            char *userID = strtok(NULL, " \n");
+            char *password = strtok(NULL, " \n");
 
             if (newuser_handler(client_socket, userID, password, currentUser) == -1)
             { /* Error when handling newuser request. */
@@ -269,7 +338,9 @@ int client_handler(int client_socket, User *currentUser)
         }
         else if (strcmp(command, "send") == 0)
         { /* Send a message. */
-            char *message = strtok(NULL, " ");
+            char *message = strtok(NULL, " \n");
+
+            printf("Send: current user = '%s'\n", currentUser->userID);
 
             if (send_handler(client_socket, message, currentUser) == -1)
             { /* Error when handling send request. */
@@ -285,27 +356,13 @@ int client_handler(int client_socket, User *currentUser)
         }
         else
         { /* Invalid command. */
-            printf(">> Please enter a valid command:\n");
-            for (int i = 0; i < 4; i++)
-            {
-                printf("-- %s\n", commandList[i]);
+            if (invalid_handler(client_socket, command, currentUser) == -1)
+            { /* Error when handling invalid request. */
+                printf(">> Fail to handle invalid request. Closing connection...\n");
+                return -1;
             }
-            continue;
         } /* End Send Response. */
-
-        // Receive response
-        ssize_t receive_result = recv(client_socket, buf, sizeof(buf), 0);
-        // printf("receive_result = %ld\n", receive_result);
-        if (receive_result == 0)
-        { /* Lost connection to server */
-            printf(">> Lost connection to server. Chutting down...\n");
-            return -1;
-        }
-        else if (receive_result == -1)
-        { /* Error receiving message. */
-            printf(">> Fail to receive message from the server. Closing connection...\n");
-            return -1;
-        }
-        printf("<Server> %s\n", buf);
     }
+
+    return 0;
 }

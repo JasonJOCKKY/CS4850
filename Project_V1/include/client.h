@@ -3,6 +3,8 @@ Jingsong Tan
 Nov. 2020
 */
 
+#include "chatRoom.h"
+
 // Request the server to log the user in.
 // \return -1 on error.
 int login_request(int socket, char *userID, char *password);
@@ -37,7 +39,7 @@ int exitChatRoom(int socket);
 // \return -1 for error.
 int getUserInput(char *buffer);
 
-// Receieve response from the server. 
+// Receieve response from the server.
 // \param buffer Store the response into the buffer.
 // \param length length of the message.
 // \return -1 on error.

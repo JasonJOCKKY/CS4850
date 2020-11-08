@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include <string.h>
 
-#include "../include/chatRoom.h"
 #include "../include/client.h"
 
 // Main
@@ -23,7 +23,7 @@ int main()
         printf("Fail to receive the initial response!\n");
         return -1;
     }
-    printf("Server > %s\n", buf);
+    printf("<Server> %s\n", buf);
 
     // Chatroom Handeler
     while (1)
@@ -36,13 +36,14 @@ int main()
             return -1;
         }
         // Parse command
-        char *command = strtok(buf, " "); /* The first word entered by a user is the command. */
+        char *command = strtok(buf, " \n"); /* The first word entered by a user is the command. */
+        printf("command = '%s'\n", command);
 
         // Make request
         if (strcmp(command, "login") == 0)
         { /* Log in.  login [userID] [password] */
-            char *userID = strtok(NULL, " ");
-            char *password = strtok(NULL, " ");
+            char *userID = strtok(NULL, " \n");
+            char *password = strtok(NULL, " \n");
             if (!userID || !password)
             { /* Incorrect use of command. */
                 printf(">> Incorrect command. %s\n", commandList[0]);
@@ -56,8 +57,8 @@ int main()
         }
         else if (strcmp(command, "newuser") == 0)
         { /* Create new user. newuser [userID] [password] */
-            char *userID = strtok(NULL, " ");
-            char *password = strtok(NULL, " ");
+            char *userID = strtok(NULL, " \n");
+            char *password = strtok(NULL, " \n");
             if (!userID || !password)
             { /* Incorrect use of command. */
                 printf(">> Incorrect command. %s\n", commandList[1]);
@@ -78,7 +79,7 @@ int main()
         }
         else if (strcmp(command, "send") == 0)
         { /* Send a message. */
-            char *message = strtok(NULL, " ");
+            char *message = strtok(NULL, " \n");
             if (!message)
             { /* Incorrect use of command. */
                 printf(">> Incorrect command. %s\n", commandList[2]);
@@ -116,7 +117,7 @@ int main()
         // printf("receive_result = %ld\n", receive_result);
         if (receive_result == 0)
         { /* Lost connection to server */
-            printf(">> Lost connection to server. Chutting down...\n");
+            printf(">> Lost connection to server. Shutting down...\n");
             return -1;
         }
         else if (receive_result == -1)

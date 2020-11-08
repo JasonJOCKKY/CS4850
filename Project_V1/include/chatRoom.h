@@ -6,9 +6,4 @@
 #define MAX_LINE 256
 #define MAX_QUEUE 5
 
-// List of all commands
-char commandList[][MAX_LINE] = {
-    "login [userID] [password]",
-    "newuser [userID] [password]",
-    "send [message]",
-    "logout"};
+extern const char commandList[4][MAX_LINE];

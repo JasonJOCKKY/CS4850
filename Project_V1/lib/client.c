@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../include/chatRoom.h"
 #include "../include/client.h"
 
 int login_request(int socket, char *userID, char *password)
@@ -77,7 +76,7 @@ int logout_request(int socket)
     }
 
     // Construct the request message to send to the server
-    char buf[MAX_LINE] = "send ";
+    char buf[MAX_LINE] = "logout";
 
     // Send the message
     return send(socket, buf, sizeof(buf), 0);
