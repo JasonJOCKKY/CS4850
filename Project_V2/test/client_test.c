@@ -12,8 +12,13 @@ int test_validate_command(char *input)
 int main(int argc, char const *argv[])
 {
     test_validate_command("login tom tompass");
+    test_validate_command("who");
     test_validate_command("logout");
-    test_validate_command("send all");
-    test_validate_command("send user tom");
+    test_validate_command("send all jhdsfsfef");
+    test_validate_command("newuser");
+    test_validate_command("send tom uidfhifewf");
+    test_validate_command("new user dsklfjs fodjhsf");
+    test_validate_command("newuser jkfdh uidfhifewf");
+    
     return 0;
 }

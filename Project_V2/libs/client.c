@@ -70,20 +70,27 @@ int validate_command(char *input_string)
     // Parameters for tokenize the strings.
     char *input_token, *list_token;
     char *saveptr_input, *saveptr_list;
-    char delim[5] = " \n";
+    const char delim[5] = " \n";
 
     // Command strings
     char input_command[MAX_LINE] = "";
     char list_command[MAX_LINE] = "";
 
+    // List Entry
+    char list_entry[MAX_LINE];
+    char input_string_copy[MAX_LINE];
+
     // Match the command with a command from the list
     for (int i = 0; i < NUM_COMMANDS; i++)
     {
+        strcpy(list_entry, COMMAND_LIST[i]);
+        strcpy(input_string_copy, input_string);
+
         // Get the length of the command
         size_t command_length;
-        for (command_length = 0; command_length < strlen(COMMAND_LIST[i]); command_length++)
+        for (command_length = 0; command_length < strlen(list_entry); command_length++)
         {
-            if (COMMAND_LIST[i][command_length] == '[')
+            if (list_entry[command_length] == '[')
             {
                 command_length -= 1;
                 break;
@@ -92,7 +99,9 @@ int validate_command(char *input_string)
 
         // Construct commands
         strncpy(input_command, input_string, command_length);
-        strncpy(list_command, COMMAND_LIST[i], command_length);
+        input_command[command_length] = 0;
+        strncpy(list_command, list_entry, command_length);
+        list_command[command_length] = 0;
 
         // Compare commands
         if (strcmp(input_command, list_command) == 0)
@@ -105,12 +114,12 @@ int validate_command(char *input_string)
 
             // Check if the input matches the entry
             int does_match = 0;
-            list_token = strtok_r(COMMAND_LIST[NUM_COMMANDS], delim, &saveptr_list);
-            input_token = strtok_r(input_string, delim, &saveptr_input);
+            list_token = __strtok_r(list_entry, delim, &saveptr_list);
+            input_token = __strtok_r(input_string_copy, delim, &saveptr_input);
             while (list_token)
             {
-                list_token = strtok_r(NULL, delim, &saveptr_list);
-                input_token = strtok_r(NULL, delim, &saveptr_input);
+                list_token = __strtok_r(NULL, delim, &saveptr_list);
+                input_token = __strtok_r(NULL, delim, &saveptr_input);
                 if (list_token && !input_token)
                 { /* The input does not match the list entry. */
                     does_match = -1;

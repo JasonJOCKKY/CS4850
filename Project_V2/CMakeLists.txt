@@ -6,8 +6,8 @@ project(Project_V2)
 # Set flags
 # set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra -Wshadow -Werror")
 # set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror")
-set(CMAKE_C_FLAGS "-std=c99")
-set(CMAKE_CXX_FLAGS "-std=c++99")
+set(CMAKE_C_FLAGS "-std=c11")
+set(CMAKE_CXX_FLAGS "-std=c++11")
 
 # Set debug
 set(CMAKE_BUILD_TYPE debug)
