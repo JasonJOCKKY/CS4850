@@ -7,6 +7,9 @@ project(Project_V1)
 set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra -Wshadow -Werror")
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror")
 
+# Set debug
+set(CMAKE_BUILD_TYPE debug)
+
 # Include Directory
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
