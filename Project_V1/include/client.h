@@ -31,10 +31,6 @@ int logout_request(int socket);
 // \return -1 on error.
 int joinChatRoom(int serverPort);
 
-// Exit out of the chat room. Close the socket connection.
-// \return -1 for error.
-int exitChatRoom(int socket);
-
 // Scan the user input and store it to the buffer.
 // \return -1 for error.
 int getUserInput(char *buffer);

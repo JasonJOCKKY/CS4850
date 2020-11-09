@@ -108,11 +108,6 @@ int joinChatRoom(int serverPort)
     return client_socket;
 }
 
-int exitChatRoom(int socket)
-{
-    return close(socket);
-}
-
 int getUserInput(char *buffer)
 {
     // Validate parameter
