@@ -37,7 +37,6 @@ int main()
         }
         // Parse command
         char *command = strtok(buf, " \n"); /* The first word entered by a user is the command. */
-        printf("command = '%s'\n", command);
 
         // Make request
         if (strcmp(command, "login") == 0)
@@ -65,7 +64,7 @@ int main()
                 continue;
             }
 
-            int request_result = newuser_request(client_socket, userID, password) == -1;
+            int request_result = newuser_request(client_socket, userID, password);
             if (request_result == -1)
             { /* Error sending the message. */
                 printf(">> Fail to send newuser request. Closing connection...\n");

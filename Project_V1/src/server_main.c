@@ -37,7 +37,6 @@ int main()
             return -1;
         }
         currentUser->isLogedIn = false; /* The user is not loged in at first. */
-        printf("<<<<< new current user >>>>>>\n");
 
         // Send initial message
         char *initialMessage = "You have successfully reached the char room server!";

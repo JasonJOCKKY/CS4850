@@ -30,7 +30,7 @@ int login_handler(int socket, char *userID, char *password, User *currentUser)
             break;
         case 0: /* userID and password matches */
             snprintf(buf, MAX_LINE, "Welcome to the chat room, %s.", userID);
-            currentUser->userID = userID;
+            strcpy(currentUser->userID, userID);
             currentUser->isLogedIn = true;
             break;
         default: /* error when checking credential */
@@ -305,7 +305,7 @@ int client_handler(int client_socket, User *currentUser)
             return -1;
         }
 
-        printf("> Message received: %s\n", buf);
+        printf("> Message received: %s. (Current user: %s)\n", buf, currentUser->userID);
 
         // Parse client command
         char *command = strtok(buf, " \n");
@@ -322,7 +322,6 @@ int client_handler(int client_socket, User *currentUser)
                 return -1;
             }
             printf("> Successfully handled a login request.\n");
-            printf("After Login: current user is = '%s'\n", currentUser->userID);
         }
         else if (strcmp(command, "newuser") == 0)
         { /* Create new user. newuser [userID] [password] */
@@ -339,8 +338,6 @@ int client_handler(int client_socket, User *currentUser)
         else if (strcmp(command, "send") == 0)
         { /* Send a message. */
             char *message = strtok(NULL, " \n");
-
-            printf("Send: current user = '%s'\n", currentUser->userID);
 
             if (send_handler(client_socket, message, currentUser) == -1)
             { /* Error when handling send request. */

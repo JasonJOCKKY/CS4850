@@ -9,7 +9,7 @@ Nov. 2020
 // Data structure for user on the server.
 typedef struct userStruct
 {
-    char *userID;
+    char userID[MAX_ID_LENGTH];
     bool isLogedIn;
 } User;
 
