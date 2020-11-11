@@ -1,6 +1,7 @@
 # Socket Project - Version 1
 
 This project is written in C using unix libraries. Please make sure the following tools are installed on your system:
+- Linux or Mac OS X
 - CMake (version > 3.0.0)
 - GCC
 
