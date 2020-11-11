@@ -80,48 +80,26 @@ int command_processer(int socket, char *input_string)
     // Make different requests with command.
     if (strcmp(token, "login") == 0)
     { /* Log in.  login [userID] [password] */
-        if (login_request(socket, saveptr) == -1)
-        { /* Error making login request. */
-            return -1;
-        }
+        return login_request(socket, saveptr);
     }
     else if (strcmp(token, "newuser") == 0)
     { /* Create new user. newuser [userID] [password] */
-        switch (newuser_request(socket, saveptr))
-        {
-        case -1: /* Error */
-            return -1;
-        case -2: /* Invalid ID or Password */
-            // char error_msg[MAX_LINE];
-            // sprintf(error_msg,
-            //         "User ID should be under %d long.  Password should be between %d and %d long.",
-            //         MAX_ID_LENGTH, MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH);
-            print_error("User ID should be under 32 long.  Password should be between 4 and 8 long.");
-            return 2;
-        default: /* Success */
-            break;
-        }
+        return newuser_request(socket, saveptr);
     }
     else if (strcmp(token, "send") == 0)
     {
         /* Send a message.
         send all [message] OR
         send [userID] [message] */
-        if (send_request(socket, saveptr) == -1)
-        {
-            return -1;
-        }
+        return send_request(socket, saveptr);
     }
     else if (strcmp(token, "who") == 0)
     { /* who */
-        if (who_request(socket) == -1)
-        {
-            return -1;
-        }
+        return who_request(socket);
     }
     else if (strcmp(token, "logout") == 0)
     { /* Log out. logout */
-        if (who_request(socket) == -1)
+        if (logout_request(socket) == -1)
         {
             return -1;
         }
@@ -133,8 +111,6 @@ int command_processer(int socket, char *input_string)
     { /* Invalid command. */
         return -2;
     } /* End Make Request. */
-
-    return 0; /* Valid request. */
 }
 
 int receive_message(int socket, char *buffer)
@@ -164,7 +140,7 @@ int login_request(int socket, char *saveptr)
     char *password = __strtok_r(NULL, delim, &saveptr);
     if (!userID || !password)
     {
-        return -1;
+        return -2;
     }
 
     // Construct the request message to send to the server
@@ -190,7 +166,7 @@ int newuser_request(int socket, char *saveptr)
     char *newPassword = __strtok_r(NULL, delim, &saveptr);
     if (!newUserID || !newPassword)
     {
-        return -1;
+        return -2;
     }
 
     // Validate userID and password
@@ -224,7 +200,7 @@ int send_request(int socket, char *saveptr)
     char *message = __strtok_r(NULL, delim, &saveptr);
     if (!scope || !message)
     {
-        return -1;
+        return -2;
     }
 
     // Construct the request message to send to the server
@@ -271,14 +247,12 @@ int logout_request(int socket)
 int print_error(char *error)
 {
     printf("<<Error>> %s\n", error);
-    print_prompt();
     return 0;
 }
 
 int print_server(char *message)
 {
     printf("<Server> %s\n", message);
-    print_prompt();
     return 0;
 }
 

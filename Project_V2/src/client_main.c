@@ -15,23 +15,23 @@ void *response_handler(void *socket)
         // Keeps receieving from the server.
         switch (recv(*((int *)socket), buf, MAX_LINE, 0))
         {
-        case 0: /* Successfully received a message. */
-            print_server(buf);
+        case -1: /* Error. */
+            print_error("Fail to receive message from the server.");
+            connection_established = -1;
             break;
-        case -2: /* Lost connection to the server. */
+        case 0: /* Lost connection to the server. */
             print_error("Lost connection to the server. Closing...");
             connection_established = -1;
             break;
-        default: /* Error. */
-            print_error("Fail to receive message from the server.");
-            connection_established = -1;
+        default: /* Successfully received a message. */
+            print_server(buf);
         }
     }
 
     return NULL;
 }
 
-void *input_handler(void *params)
+void *input_handler(void *socket)
 {
     char buf[MAX_LINE];
     while (connection_established == 1)
@@ -44,21 +44,24 @@ void *input_handler(void *params)
         }
 
         // Process user command.
-        switch (command_processer(client_socket, buf))
+        switch (command_processer(*((int *)socket), buf))
         {
-        case 0: /* Valid server request. Receive server message.*/
-            break;
         case 1: /* Log out */
             printf("Logging out...\n");
-            return 0;
-        case -2: /* Invalid Request */
-            print_error("Invalid Request");
+            connection_established = 0;
             break;
-        default: /* Error */
-            print_error("Error proccessing command.");
-            return -1;
+        case -1: /* Error */
+            print_error("Error proccessing command!");
+            connection_established = -1;
+            break;
+        case -2: /* Invalid Request */
+            print_error("Invalid Request!");
+            break;
+        default: /* Success */
+            break;
         }
     }
+
     return NULL;
 }
 
@@ -83,45 +86,16 @@ int main(int argc, char const *argv[])
     }
     print_server(buf);
 
-    // Handle User Commands
-    while (1)
-    {
-        // Get user command.
-        print_prompt();
-        if (get_input(buf) == -1)
-        { /* Fail to get user input. */
-            print_error("Fail to get user input.");
-            return -1;
-        }
+    // Input and output threads
+    connection_established = 1;
+    pthread_t tInput, tResponse;
+    pthread_create(&tInput, NULL, &input_handler, &client_socket);
+    pthread_create(&tResponse, NULL, &response_handler, &client_socket);
+    
+    while (connection_established == 1) ;
 
-        // Process user command.
-        switch (command_processer(client_socket, buf))
-        {
-        case 0: /* Valid server request. Receive server message.*/
-            switch (receive_message(client_socket, buf))
-            {
-            case 0: /* Successfully received a message. */
-                print_server(buf);
-                break;
-            case -2: /* Lost connection to the server. */
-                print_error("Lost connection to the server. Closing...");
-                break;
-            default: /* Error. */
-                print_error("Fail to receive message from the server.");
-                return -1;
-            }
-            break;
-        case 1: /* Log out */
-            printf("Logging out...\n");
-            return 0;
-        case -2: /* Invalid Request */
-            print_error("Invalid Request");
-            break;
-        default: /* Error */
-            print_error("Error proccessing command.");
-            return -1;
-        }
-    }
+    pthread_cancel(tInput);
+    pthread_cancel(tResponse);
 
     return 0;
 }

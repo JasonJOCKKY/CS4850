@@ -18,17 +18,13 @@ typedef struct client_t
 
 typedef struct clientList_t
 {
-    Client *list;
+    Client *list[MAX_CLIENTS]; // Array of client pointers
     size_t size;
 } ClientList;
 
 // Create a new client list.
 // \return Pointer to the new list. NULL for error.
 ClientList *create_clientList();
-
-// Distroy a client list.
-// \return -1 for error.
-int destroy_clientList(ClientList *client_list);
 
 // Add a client to the list.
 // \return Pointer to the new client. NULL for error.
@@ -39,7 +35,7 @@ Client *add_client(ClientList *client_list, int client_socket);
 int remove_client(ClientList *client_list, Client *target_client);
 
 // Check if a client is in the list.
-// \return 0 for yes. 1 for no. -1 for error. 
+// \return 1 for yes. 0 for no. -1 for error. 
 int isInList(ClientList *client_list, Client *target_client);
 
 /* Chatroom Functions 
@@ -63,6 +59,7 @@ void *client_handler(void *params);
 typedef struct client_handler_param {
     Client *current_client;
     ClientList *client_list;
+    pthread_mutex_t *lock;
 } param_t;
 
 // Process client's input.
@@ -77,28 +74,28 @@ int command_processer(ClientList *client_list, Client *current_client, char *inp
 int write_newuser(char *userID, char *password);
 
 // Check if userID and password matches
-// \return 0 for yes. -1 for error. -2 for no.
-int credential_doesMatch(char *userID, char *password);
+// \return 1 for pass. 0 for not pass. -1 for error.
+int authenticate(char *userID, char *password);
 
 /* Request Handlers
 */
 
 // Handel the request to log the user in, current user will be set to the correct user.  Send awknoledgement back to the client.
 // \return -1 on error.
-int login_handler(int socket, char *saveptr);
+int login_handler(Client *current_client, char *saveptr);
 
 // Handel the request to create a new user. Write the new user information onto the disk.
 // \return -1 for error.
-int newuser_handler(int socket, char *saveptr);
+int newuser_handler(Client *current_client, char *saveptr);
 
 // Handle the request to broadcast a message.
 // \return -1 for error.
-int send_handler(int socket, char *saveptr);
+int send_handler(ClientList *client_list, Client *current_client, char *saveptr);
 
-// Handle the request to log the user out.
+// Handle the request for user list.
 // \return -1 for error.
-int logout_handler(int socket, char *saveptr);
+int who_handler(ClientList *client_list, Client *current_client);
 
 // Handle a invalid command. Send error message to the client.
 // \return -1 for error.
-int invalid_handler(int socket, char *saveptr);
+int invalid_handler(Client *current_client, char *input);

@@ -4,4 +4,4 @@
 #define USERLIST_FILE "../data/users.txt"
 #define SERVER_PORT 13347
 #define MAX_LINE 256
-#define MAX_QUEUE 5
+#define MAX_CLIENTS 3

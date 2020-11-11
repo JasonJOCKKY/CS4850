@@ -49,6 +49,7 @@ int main()
 
         // Handle user requests
         pthread_t tid;
+        pthread_mutex_t lock;
         param_t *param = (param_t *)malloc(sizeof(param_t));
         if (!param)
         {
@@ -57,6 +58,7 @@ int main()
         }
         param->client_list = client_list;
         param->current_client = current_client;
+        param->lock = &lock;
         pthread_create(&tid, NULL, &client_handler, param);
     }
 

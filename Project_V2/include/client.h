@@ -15,7 +15,7 @@ int join_chatRoom(int serverPort);
 int get_input(char *buffer);
 
 // Process user's input.
-// \return 0 for valid request. 1 for loggin out. -1 for error. -2 for invlid command.
+// \return 1 for loggin out. -1 for error. -2 for invlid command.
 int command_processer(int socket, char *input_string);
 
 // Receive a message from the server and store it into the buffer.
@@ -26,20 +26,19 @@ int receive_message(int socket, char *buffer);
 */
 
 // Request the server to log the user in.
-// \return -1 on error.
+// \return -1 on error. -2 for invalid userID or password.
 int login_request(int socket, char *saveptr);
 
 // Check the userID and password are valid. Then request the server to create a new user.
 // \param newUserID length should be less than MAX_ID_LENGTH
 // \param newPassword length shouldbe beween MAX_PASSWORD_LENGTH and MIN_PASSWORD_LENGTH
-// \return -1 for error sending the message.
-// \return -2 for invalid userID or password.
+// \return -1 for error sending the message. -2 for invalid userID or password.
 int newuser_request(int socket, char *saveptr);
 
 // Request the server to send a message.
 // The message will be broadcasted if the scope is "all"
 // Otherwise the message will be send to one specific user.
-// \return -1 for error.
+// \return -1 for error. \return -2 for invalid request.
 int send_request(int socket, char *saveptr);
 
 // Request a current-user list from the server.
