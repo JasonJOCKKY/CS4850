@@ -69,13 +69,18 @@ int command_processer(int socket, char *input_string)
         return -1;
     }
 
+    if (input_string[0] == 0)
+    {
+        return -2;
+    }
+
     // Copy the input string.
     char input_copy[MAX_LINE];
     strcpy(input_copy, input_string);
 
     // Parameters for tokenize the input.
     char *saveptr;
-    char *token = __strtok_r(input_copy, delim, &saveptr); /* The first word entered by a user is the command. */
+    char *token = strtok_r(input_copy, delim, &saveptr); /* The first word entered by a user is the command. */
 
     // Make different requests with command.
     if (strcmp(token, "login") == 0)
@@ -136,8 +141,8 @@ int login_request(int socket, char *saveptr)
     }
 
     // Get userID and password
-    char *userID = __strtok_r(NULL, delim, &saveptr);
-    char *password = __strtok_r(NULL, delim, &saveptr);
+    char *userID = strtok_r(NULL, delim, &saveptr);
+    char *password = strtok_r(NULL, delim, &saveptr);
     if (!userID || !password)
     {
         return -2;
@@ -162,8 +167,8 @@ int newuser_request(int socket, char *saveptr)
     }
 
     // Get userID and password
-    char *newUserID = __strtok_r(NULL, delim, &saveptr);
-    char *newPassword = __strtok_r(NULL, delim, &saveptr);
+    char *newUserID = strtok_r(NULL, delim, &saveptr);
+    char *newPassword = strtok_r(NULL, delim, &saveptr);
     if (!newUserID || !newPassword)
     {
         return -2;
@@ -196,8 +201,8 @@ int send_request(int socket, char *saveptr)
     }
 
     // Get scope and message
-    char *scope = __strtok_r(NULL, delim, &saveptr); /* Either "all" or userID */
-    char *message = __strtok_r(NULL, "", &saveptr);
+    char *scope = strtok_r(NULL, delim, &saveptr); /* Either "all" or userID */
+    char *message = strtok_r(NULL, "", &saveptr);
 
     if (!scope || !message)
     {

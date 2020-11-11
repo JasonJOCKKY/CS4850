@@ -79,7 +79,7 @@ int command_processer(ClientList *client_list, Client *current_client, char *inp
 
     // Parameters for tokenize the input.
     char *saveptr;
-    char *token = __strtok_r(input_copy, delim, &saveptr); /* The first word is the command. */
+    char *token = strtok_r(input_copy, delim, &saveptr); /* The first word is the command. */
 
     // Make different response with command.
     if (strcmp(token, "login") == 0)
@@ -324,8 +324,8 @@ int login_handler(Client *current_client, char *saveptr)
     }
 
     // Get userID and password
-    char *userID = __strtok_r(NULL, delim, &saveptr);
-    char *password = __strtok_r(NULL, delim, &saveptr);
+    char *userID = strtok_r(NULL, delim, &saveptr);
+    char *password = strtok_r(NULL, delim, &saveptr);
     if (!userID || !password)
     {
         return -1;
@@ -373,8 +373,8 @@ int newuser_handler(Client *current_client, char *saveptr)
     }
 
     // Get userID and password
-    char *newUserID = __strtok_r(NULL, delim, &saveptr);
-    char *newPassword = __strtok_r(NULL, delim, &saveptr);
+    char *newUserID = strtok_r(NULL, delim, &saveptr);
+    char *newPassword = strtok_r(NULL, delim, &saveptr);
     if (!newUserID || !newPassword)
     {
         return -1;
@@ -421,8 +421,8 @@ int send_handler(ClientList *client_list, Client *current_client, char *saveptr)
     }
 
     // Get userID and password
-    char *scope = __strtok_r(NULL, delim, &saveptr);
-    char *message = __strtok_r(NULL, "", &saveptr);
+    char *scope = strtok_r(NULL, delim, &saveptr);
+    char *message = strtok_r(NULL, "", &saveptr);
 
     if (!scope || !message)
     {
