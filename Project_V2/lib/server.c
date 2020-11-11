@@ -422,7 +422,8 @@ int send_handler(ClientList *client_list, Client *current_client, char *saveptr)
 
     // Get userID and password
     char *scope = __strtok_r(NULL, delim, &saveptr);
-    char *message = __strtok_r(NULL, delim, &saveptr);
+    char *message = __strtok_r(NULL, "", &saveptr);
+
     if (!scope || !message)
     {
         return -1;

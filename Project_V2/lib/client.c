@@ -197,7 +197,8 @@ int send_request(int socket, char *saveptr)
 
     // Get scope and message
     char *scope = __strtok_r(NULL, delim, &saveptr); /* Either "all" or userID */
-    char *message = __strtok_r(NULL, delim, &saveptr);
+    char *message = __strtok_r(NULL, "", &saveptr);
+
     if (!scope || !message)
     {
         return -2;
